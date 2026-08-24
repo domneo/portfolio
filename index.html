@@ -145,10 +145,68 @@
         body { block-size: auto; min-block-size: 100svh; overflow: visible; }
         .terminal { min-block-size: 24rem; }
       }
+
+      /* --- CRT tube --------------------------------------------------------
+       * The page ships as ordinary markup: #crt-page is transparent to layout,
+       * so .shell stays a direct flex child of <body>. static/crt.js only adds
+       * .crt-on — and only then moves #crt-page inside the staging canvas —
+       * once Chrome's HTML-in-canvas API, WebGL, and the shader all check out.
+       * Without the flag, none of the rules below ever match. */
+      #crt-page {
+        display: contents;
+      }
+
+      .crt-on body {
+        display: block;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      /* #crt-page takes over the layout job <body> was doing, because inside
+       * the canvas it is the root of everything that gets painted — including
+       * the background, which the capture would otherwise miss. */
+      .crt-on #crt-page {
+        display: flex;
+        inline-size: 100%;
+        block-size: 100%;
+        padding: var(--space-4);
+        background-color: var(--paper);
+      }
+
+      #crt-staging,
+      #crt-output {
+        position: fixed;
+        inset: 0;
+        display: block;
+        inline-size: 100%;
+        block-size: 100%;
+      }
+
+      /* Visible only until the first shaded frame lands on top of it. */
+      #crt-staging {
+        z-index: 0;
+        background-color: var(--paper);
+      }
+
+      /* The shader output covers the tube; every event falls through it to the
+       * real DOM sitting behind. */
+      #crt-output {
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      @media (max-width: 40rem) {
+        .crt-on #crt-page { padding: var(--space-3); }
+      }
+
+      @media (max-height: 32rem) {
+        .crt-on #crt-page { overflow-y: auto; }
+      }
     }
   </style>
 </head>
 <body>
+  <div id="crt-page">
   <main class="shell">
     <article class="card terminal">
       <header class="card-header">
@@ -224,7 +282,9 @@ drwxr-xr-x  side-quests  unstable, mounted anyway
       <a class="btn btn--lg" href="/contact">Contact</a>
     </nav>
   </main>
+  </div>
 
   <script src="static/ds/runtime.js" defer></script>
+  <script src="static/crt.js" defer></script>
 </body>
 </html>
