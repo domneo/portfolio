@@ -57,6 +57,9 @@
         flex-wrap: wrap;
       }
 
+      /* `safe` keeps the centring from pushing the first child past the top of
+       * the scroll box — once the content is taller than the body it packs to
+       * the start instead, so the notice stays reachable. */
       .terminal .card-body {
         flex: 1;
         min-block-size: 0;
@@ -67,6 +70,8 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        justify-content: safe center;
+        align-items: safe center;
         gap: var(--space-5);
         text-align: center;
       }
