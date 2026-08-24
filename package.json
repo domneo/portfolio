@@ -1,0 +1,14 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "description": "My portfolio site",
+  "license": "MIT",
+  "author": "Dominic Neo",
+  "type": "module",
+  "scripts": {
+    "sync:ds": "node scripts/sync-ds.js"
+  },
+  "dependencies": {
+    "bleed": "github:domneo/bleed"
+  }
+}

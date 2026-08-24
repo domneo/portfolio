@@ -1,0 +1,23 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      bleed:
+        specifier: github:domneo/bleed
+        version: https://codeload.github.com/domneo/bleed/tar.gz/7355451304b4bebc1c2be09b29315bcf3cf31b3b
+
+packages:
+
+  bleed@https://codeload.github.com/domneo/bleed/tar.gz/7355451304b4bebc1c2be09b29315bcf3cf31b3b:
+    resolution: {tarball: https://codeload.github.com/domneo/bleed/tar.gz/7355451304b4bebc1c2be09b29315bcf3cf31b3b}
+    version: 1.0.0
+
+snapshots:
+
+  bleed@https://codeload.github.com/domneo/bleed/tar.gz/7355451304b4bebc1c2be09b29315bcf3cf31b3b: {}
