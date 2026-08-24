@@ -1,11 +1,230 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="blip">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dominic Neo — portfolio. A small machine that boots when you look at it.">
   <title>dom</title>
+
+  <link rel="stylesheet" href="static/ds/fonts.css">
+  <link rel="stylesheet" href="static/ds/base.css">
+  <link rel="stylesheet" href="static/ds/themes.css">
+  <link rel="stylesheet" href="static/ds/components.css">
+
+  <style>
+    /* Page layer sits after the kit's layers, so these win without !important. */
+    @layer page;
+
+    @layer page {
+      /* A definite viewport height is what lets the card scroll inside itself
+       * instead of growing the document. */
+      body {
+        block-size: 100svh;
+        overflow: hidden;
+        display: flex;
+        padding: var(--space-4);
+      }
+
+      .shell {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-5);
+        inline-size: 100%;
+        max-inline-size: 68rem;
+        min-block-size: 0;
+        margin-inline: auto;
+      }
+
+      .terminal {
+        flex: 1;
+        min-block-size: 0;
+      }
+
+      .terminal .card-header {
+        flex: none;
+      }
+
+      .terminal .card-body {
+        flex: 1;
+        min-block-size: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-color: var(--neutral) transparent;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-5);
+      }
+
+      /* A column flex container shrinks its children to fit; the console has to
+       * keep them at full height and scroll past them instead. */
+      .terminal .card-body > * {
+        flex: none;
+      }
+
+      /* --- terminal text ---------------------------------------------------- */
+      .term__meta,
+      .term__log,
+      .term__listing,
+      .term__man,
+      .term__line,
+      .term__copy {
+        font-size: var(--font-size-1);
+      }
+
+      .term__copy {
+        max-inline-size: 68ch;
+      }
+
+      .term__copy + .term__copy {
+        margin-block-start: var(--space-3);
+      }
+
+      .term__meta {
+        color: var(--neutral-strong);
+      }
+
+      /* Fixed-width blocks keep their alignment and scroll sideways rather than
+       * reflowing into nonsense on a narrow screen. */
+      .term__log,
+      .term__listing,
+      .term__man {
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        padding-block-end: var(--space-1);
+      }
+
+      .term__t { color: var(--neutral); }
+      .term__ok { color: var(--positive-strong); }
+      .term__warn { color: var(--warning-strong); }
+      .term__key { color: var(--accent); }
+
+      .term__line {
+        display: flex;
+        gap: var(--space-2);
+        align-items: baseline;
+      }
+
+      .term__line::before {
+        content: "guest@domos:~$";
+        color: var(--accent);
+        white-space: nowrap;
+      }
+
+      .term__rule {
+        margin-block: 0;
+        border-top-color: var(--neutral-subtle);
+      }
+
+      .term__cursor {
+        display: inline-block;
+        inline-size: 0.6em;
+        block-size: 1.15em;
+        translate: 0 0.2em;
+        background-color: var(--ink);
+        animation: term-blink 1.06s steps(1) infinite;
+      }
+
+      /* Ends on the visible frame, so reduced-motion (which collapses the
+       * duration to one instant frame) leaves a solid cursor, not a missing one. */
+      @keyframes term-blink {
+        0%, 50% { opacity: 0; }
+        50.01%, 100% { opacity: 1; }
+      }
+
+      .actions {
+        flex: none;
+      }
+
+      @media (max-width: 40rem) {
+        body { padding: var(--space-3); }
+        .terminal { --card-pad: var(--space-4); }
+      }
+
+      /* Too short to split the viewport — let the document scroll instead. */
+      @media (max-height: 32rem) {
+        body { block-size: auto; min-block-size: 100svh; overflow: visible; }
+        .terminal { min-block-size: 24rem; }
+      }
+    }
+  </style>
 </head>
 <body>
-  
+  <main class="shell">
+    <article class="card terminal">
+      <header class="card-header">
+        <h1 class="card-title">dom@domos — /dev/tty1</h1>
+        <span class="badge badge--accent"><span class="badge__dot" aria-hidden="true"></span>guest</span>
+      </header>
+
+      <div class="card-body" tabindex="0" role="region" aria-label="System console">
+        <p class="term__meta">domos 1.0.0 (tty1) — kernel 6.1.0-handmade<br>no warranty, express or implied</p>
+
+        <pre class="term__log"><span class="term__t">[ 0.000000 ]</span> cold start — power good
+<span class="term__t">[ 0.000412 ]</span> cpu0: one core, undocumented, caffeine-cooled
+<span class="term__t">[ 0.003118 ]</span> mem: 8 GiB usable, 3 GiB held by song lyrics
+<span class="term__t">[ 0.014208 ]</span> fs: mount /self ................... <span class="term__ok">ok</span>
+<span class="term__t">[ 0.061140 ]</span> fs: mount /work ................... <span class="term__ok">ok</span>
+<span class="term__t">[ 0.078902 ]</span> fs: mount /contact ................ <span class="term__ok">ok</span>
+<span class="term__t">[ 0.219471 ]</span> fs: mount /side-quests ...... <span class="term__warn">degraded</span>
+<span class="term__t">[ 0.402118 ]</span> net: link up, listening on :443
+<span class="term__t">[ 0.998001 ]</span> auth: visitor recognised as `guest`
+<span class="term__t">[ 1.000000 ]</span> login: session granted</pre>
+
+        <hr class="term__rule">
+
+        <p class="term__line"><span>cat /etc/motd</span></p>
+
+        <div>
+          <p class="term__copy">You have reached the personal machine of <span class="term__key">Dominic Neo</span>. It is not a product and it is not for sale. It boots when someone looks at it and idles the rest of the time.</p>
+          <p class="term__copy">This filesystem holds work, notes, and a number of unfinished things that turned out to be load-bearing anyway. Everything here was assembled by hand — the design system, the type, the stray kernel panics. All mine.</p>
+          <p class="term__copy">You are logged in as <span class="term__key">guest</span>, which grants read access to everything below and write access to nothing. That arrangement suits us both.</p>
+        </div>
+
+        <p class="term__line"><span>ls -l /</span></p>
+
+        <pre class="term__listing">drwxr-xr-x  work         shipped things, with notes
+drwxr-xr-x  contact      the operator, reachable
+drwxr-xr-x  self         biography, lightly compressed
+drwxr-xr-x  side-quests  unstable, mounted anyway
+-rw-r--r--  motd         you are reading it</pre>
+
+        <p class="term__line"><span>man operator</span></p>
+
+        <pre class="term__man"><span class="term__key">NAME</span>
+     dom — designs and builds things for the web
+
+<span class="term__key">SYNOPSIS</span>
+     dom [--sketch] [--build] [--ship] <em>target</em>
+
+<span class="term__key">DESCRIPTION</span>
+     Takes an idea from a rough sketch to something
+     that runs in public. Prefers small tools, plain
+     HTML, and systems that explain themselves to
+     the next person who opens them.
+
+     Runs quietly. Ships often. Reads the docs.
+
+<span class="term__key">SEE ALSO</span>
+     work(1), contact(1)</pre>
+
+        <p class="term__line"><span>uptime</span></p>
+
+        <pre class="term__log">  up since first boot — load average: 0.42, 1.07, 3.15</pre>
+
+        <hr class="term__rule">
+
+        <p class="term__meta">TIP: the two switches below are wired to /work and /contact.</p>
+
+        <p class="term__line"><span class="term__cursor" aria-hidden="true"></span></p>
+      </div>
+    </article>
+
+    <nav class="btn-group actions" aria-label="Primary">
+      <a class="btn btn--lg btn--solid" href="/work">Work</a>
+      <a class="btn btn--lg" href="/contact">Contact</a>
+    </nav>
+  </main>
+
+  <script src="static/ds/runtime.js" defer></script>
 </body>
 </html>
