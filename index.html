@@ -16,6 +16,11 @@
     @layer page;
 
     @layer page {
+      .alert__title, .btn {
+        font-weight: var(--font-weight-bold);
+        text-transform: uppercase;
+      }
+
       /* A definite viewport height is what lets the card scroll inside itself
        * instead of growing the document. */
       body {
@@ -66,10 +71,13 @@
         text-align: center;
       }
 
-      /* A column flex container shrinks its children to fit; the console has to
-       * keep them at full height and scroll past them instead. */
-      .terminal .card-body > * {
-        flex: none;
+      .welcome-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-3);
       }
 
       /* --- terminal text ---------------------------------------------------- */
@@ -94,8 +102,25 @@
       .wip-note {
         inline-size: 100%;
         max-inline-size: 30rem;
-        margin-top: var(--space-3);
+        margin-top: var(--space-5);
         text-align: left;
+      }
+
+      .wip-note .alert__text {
+        margin-top: 0px;
+      }
+
+      /* Only the browsers that cannot paint the tube are told about it. */
+      .compat-note {
+        display: none;
+        inline-size: 100%;
+        max-inline-size: 50rem;
+        margin-bottom: var(--space-3);
+        text-align: left;
+      }
+
+      .crt-unsupported .compat-note {
+        display: flex;
       }
 
       .term__meta {
@@ -206,6 +231,16 @@
       }
     }
   </style>
+
+  <script>
+    /* The tube needs Chrome's HTML-in-canvas API — static/crt.js runs the same
+     * test before it mounts. Repeated here, inline and before first paint, so
+     * the compatibility notice is part of the first frame instead of arriving
+     * late and shoving the page around. */
+    if (!("drawElementImage" in (window.CanvasRenderingContext2D?.prototype ?? {}))) {
+      document.documentElement.classList.add("crt-unsupported");
+    }
+  </script>
 </head>
 <body>
   <div id="crt-page">
@@ -217,21 +252,33 @@
       </header>
 
       <div class="card-body" tabindex="0" role="region" aria-label="System console">
-        <svg class="term__logo" width="33" height="51" viewBox="0 0 33 51" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M30.1228 51C28.5339 51 27.2458 49.7191 27.2458 48.1391L27.2458 38.753L19.0876 43.4367C17.7116 44.2267 15.952 43.7579 15.1575 42.3895C14.363 41.0212 14.8345 39.2715 16.2106 38.4815L26.9582 32.3111C29.6434 30.7695 33 32.6966 33 35.7799L32.9999 48.1391C32.9999 49.7191 31.7118 51 30.1228 51Z" fill="currentColor"/>
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M0 5.15735C-4.72214e-07 1.19314 4.3156 -1.2845 7.76808 0.697607L30.409 13.696C33.8615 15.6781 33.8615 20.6334 30.409 22.6155L7.76808 35.6139C4.31561 37.596 1.32557e-06 35.1184 8.50716e-07 31.1541L0 5.15735ZM5.75413 6.1484L5.75413 30.1631L26.6688 18.1558L5.75413 6.1484Z" fill="currentColor"/>
-        </svg>
-
-        <div>
-          <p class="term__copy">You are welcome to the <span class="term__key">personal portfolio</span> of Dominic Neo.</p>
-          <p class="term__meta">version 1.0.0</p>
+        <div class="alert alert--solid compat-note" role="status">
+          <svg class="alert__icon icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.25"/>
+            <path d="m8 10.75v0m0-6v3.5"/>
+          </svg>
+          <div>
+            <p class="alert__title">A notice regarding your optics</p>
+            <p class="alert__text">This browser has not been enrolled in <code>#canvas-draw-element</code>, and your experience will be the lesser for it.</p>
+            <p class="alert__text">Kindly visit <a href="chrome://flags/#canvas-draw-element" target="_blank">chrome://flags/#canvas-draw-element</a>, enable the feature, and reload. Please enjoy the page equally.</p>
+          </div>
         </div>
 
-        <div class="alert wip-note" role="status">
-          <svg class="alert__icon icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" aria-hidden="true">
-            <path d="m11.75 13.75c0-5-2-4-2-5.75s2-0.75 2-5.75m-7.5 11.5c0-5 2-4 2-5.75s-2-.75-2-5.75m-1.5-.5h10.5m-10.5 12.5h10.5"/>
+        <div class="welcome-content">
+          <svg class="term__logo" width="33" height="51" viewBox="0 0 33 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M30.1228 51C28.5339 51 27.2458 49.7191 27.2458 48.1391L27.2458 38.753L19.0876 43.4367C17.7116 44.2267 15.952 43.7579 15.1575 42.3895C14.363 41.0212 14.8345 39.2715 16.2106 38.4815L26.9582 32.3111C29.6434 30.7695 33 32.6966 33 35.7799L32.9999 48.1391C32.9999 49.7191 31.7118 51 30.1228 51Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0 5.15735C-4.72214e-07 1.19314 4.3156 -1.2845 7.76808 0.697607L30.409 13.696C33.8615 15.6781 33.8615 20.6334 30.409 22.6155L7.76808 35.6139C4.31561 37.596 1.32557e-06 35.1184 8.50716e-07 31.1541L0 5.15735ZM5.75413 6.1484L5.75413 30.1631L26.6688 18.1558L5.75413 6.1484Z" fill="currentColor"/>
           </svg>
-          <p class="alert__text">This portfolio is a work in progress.<br />Use the buttons below to proceed.</p>
+          <div>
+            <p class="term__copy">You are welcome to the <span class="term__key">personal portfolio</span> of Dominic Neo.</p>
+            <p class="term__meta">version 1.0.0</p>
+          </div>
+          <div class="alert wip-note" role="status">
+            <svg class="alert__icon icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" aria-hidden="true">
+              <path d="m11.75 13.75c0-5-2-4-2-5.75s2-0.75 2-5.75m-7.5 11.5c0-5 2-4 2-5.75s-2-.75-2-5.75m-1.5-.5h10.5m-10.5 12.5h10.5"/>
+            </svg>
+            <p class="alert__text">This portfolio is a work in progress.<br />Use the buttons below to proceed.</p>
+          </div>
         </div>
       </div>
     </article>
