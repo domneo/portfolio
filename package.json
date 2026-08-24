@@ -6,7 +6,8 @@
   "author": "Dominic Neo",
   "type": "module",
   "scripts": {
-    "sync:ds": "node scripts/sync-ds.js"
+    "sync:ds": "node scripts/sync-ds.js",
+		"build": "pnpm sync:ds"
   },
   "dependencies": {
     "bleed": "github:domneo/bleed"
