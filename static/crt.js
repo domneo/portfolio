@@ -64,8 +64,8 @@ varying vec2 v_texCoord;
 const float CURVE    = 0.055;  /* barrel distortion of the glass */
 const float SCAN     = 0.15;   /* scanline depth */
 const float MASK     = 0.05;   /* aperture-grille depth */
-const float BLOOM    = 0.55;   /* phosphor halo around bright strokes */
-const float VIGNETTE = 0.5;
+const float BLOOM    = 0.15;   /* phosphor halo around bright strokes */
+const float VIGNETTE = 0.8;
 
 vec3 tap(vec2 uv) { return texture2D(u_texture, uv).rgb; }
 
@@ -75,10 +75,6 @@ void main() {
 
   /* Curvature: the corners of a tube sit further from the gun. */
   vec2 uv = v_texCoord + dc * d2 * CURVE;
-
-  /* Tracking drift — a fraction of a pixel, so the image never sits
-     perfectly still without ever being hard to read. */
-  uv.x += u_motion * sin(uv.y * 90.0 + u_time * 1.7) * 0.00035;
 
   vec2 inb = step(vec2(0.0), uv) * step(uv, vec2(1.0));
   float inside = inb.x * inb.y;
@@ -109,8 +105,13 @@ void main() {
 
   /* Refresh flicker, plus a slow roll bar drifting up the screen. */
   col *= 1.0 - u_motion * 0.02 * (0.5 + 0.5 * sin(u_time * 7.3));
-  float bar = fract(v_texCoord.y * 0.5 - u_time * 0.06);
-  col *= 1.0 - u_motion * 0.03 * smoothstep(0.07, 0.0, bar);
+  float bar = fract(v_texCoord.y * 0.8 - u_time * 0.11);
+  /* The band itself, plus a bright lip running just ahead of it — the
+     beam catching up with itself, the way an out-of-sync tube shows it. */
+  float dark = smoothstep(0.20, 0.0, bar);
+  float lip  = smoothstep(0.28, 0.20, bar) * (1.0 - dark);
+  col *= 1.0 - u_motion * 0.13 * dark;
+  col *= 1.0 + u_motion * 0.07 * lip;
 
   /* Vignette, then the bezel: everything the curve pushed off-glass. */
   col *= 1.0 - d2 * VIGNETTE;
