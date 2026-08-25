@@ -67,7 +67,19 @@ const float MASK     = 0.05;   /* aperture-grille depth */
 const float BLOOM    = 0.15;   /* phosphor halo around bright strokes */
 const float VIGNETTE = 0.8;
 
+/* Sync glitch: the picture losing its lock for a moment. Time is diced into
+   slots, each slot fires at most once, and only some of them fire at all —
+   so the bursts arrive irregularly instead of on a beat. */
+const float SLOT  = 5.0;    /* seconds per slot: at most one burst each */
+const float SPAN  = 0.35;   /* longest a burst can run, both waves and all */
+const float WARP  = 0.1;    /* peak sideways pull, in texture units */
+const float CLIMB = 5.5;    /* screen heights per second the wave rises */
+const float LAG   = 0.09;   /* seconds between waves in the same burst */
+const float TAU   = 6.2831853;
+
 vec3 tap(vec2 uv) { return texture2D(u_texture, uv).rgb; }
+
+float hash(float n) { return fract(sin(n * 91.3458) * 47453.5453); }
 
 void main() {
   vec2 dc = v_texCoord - 0.5;
@@ -76,20 +88,75 @@ void main() {
   /* Curvature: the corners of a tube sit further from the gun. */
   vec2 uv = v_texCoord + dc * d2 * CURVE;
 
-  vec2 inb = step(vec2(0.0), uv) * step(uv, vec2(1.0));
+  /* --- sync glitch ---------------------------------------------------
+     One slot, one possible burst: a hash of the slot index decides when
+     inside the slot it starts, a second draw decides whether it happens
+     at all. Everything after that is geometry — a wave that has not begun
+     sits below the glass, one that is done sits above it, so neither
+     needs gating in time. */
+  float slot = floor(u_time / SLOT);
+  float at = hash(slot) * (SLOT - SPAN);
+  float e = u_time - slot * SLOT - at;   /* seconds into this slot's burst */
+  float live = u_motion * step(0.5, hash(slot + 3.0));
+
+  /* One or two of them, the second set off LAG behind the first, so a
+     burst is a single crack of the whip or a quick double. */
+  float count = 1.0 + floor(hash(slot + 31.0) * 2.0);
+
+  float bend = 0.0;   /* summed sideways pull */
+  float pull = 0.0;   /* summed window weight — drives fringing and the dip */
+
+  for (int i = 0; i < 2; i++) {
+    float k = float(i);
+    float on = step(k, count - 1.0);
+
+    /* One cycle, and one only: freq is in cycles per screen height, so
+       the larger it gets the tighter that single cycle is wound and the
+       harder the S-bend. Each wave in the train draws its own. */
+    float freq = mix(9.0, 15.0, hash(slot + 11.0 + k * 7.0));
+
+    /* Climbing at a fixed rate: it enters a full cycle below the glass
+       and leaves a full cycle above it, whatever the burst is doing. */
+    float y0 = 1.0 + 1.0 / freq - (e - k * LAG) * CLIMB;
+    float band = (uv.y - y0) * freq;   /* how far up the wave this line sits */
+
+    /* Hann window one cycle wide: everything outside is untouched
+       picture, and the ends taper instead of tearing. */
+    float win = on * step(abs(band), 0.5) * (0.5 + 0.5 * cos(band * TAU));
+    float w = sin(band * TAU);
+    bend += sign(w) * pow(abs(w), 0.6) * win;
+    pull += win;
+  }
+
+  /* Only the signal bends. The scanlines and the grille below are the
+     glass itself, so they stay put and the picture slides across them. */
+  bend *= live;
+  pull *= live;
+
+  vec2 suv = uv + vec2(bend * WARP, 0.0);
+
+  vec2 inb = step(vec2(0.0), suv) * step(suv, vec2(1.0));
   float inside = inb.x * inb.y;
 
-  vec3 col = tap(uv);
+  /* The guns fall out of convergence, but only along the wave itself. */
+  float sep = pull * 0.004;
+  vec3 col = vec3(
+    tap(suv + vec2(sep, 0.0)).r,
+    tap(suv).g,
+    tap(suv - vec2(sep, 0.0)).b);
 
   /* Bloom: only where the neighbours are brighter than this pixel, so
      glyph edges glow and filled areas are left alone. One CSS pixel of
      reach, whatever the capture's device density. */
   vec2 texel = 1.0 / u_css;
-  vec3 near = tap(uv + vec2(texel.x, 0.0))
-            + tap(uv - vec2(texel.x, 0.0))
-            + tap(uv + vec2(0.0, texel.y))
-            + tap(uv - vec2(0.0, texel.y));
+  vec3 near = tap(suv + vec2(texel.x, 0.0))
+            + tap(suv - vec2(texel.x, 0.0))
+            + tap(suv + vec2(0.0, texel.y))
+            + tap(suv - vec2(0.0, texel.y));
   col += max(near * 0.25 - col, vec3(0.0)) * BLOOM;
+
+  /* Brightness sags where the line lost its timing. */
+  col *= 1.0 - 0.25 * pull;
 
   /* Scanlines — one dark band every two CSS pixels. */
   float scan = 0.5 + 0.5 * cos(uv.y * u_css.y * 3.14159265);
