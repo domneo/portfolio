@@ -10,14 +10,14 @@ importers:
     dependencies:
       bleed:
         specifier: github:domneo/bleed
-        version: https://codeload.github.com/domneo/bleed/tar.gz/7355451304b4bebc1c2be09b29315bcf3cf31b3b
+        version: https://codeload.github.com/domneo/bleed/tar.gz/9d268eb13daef5898ca8e6c8b980c3b4a335c1b7
 
 packages:
 
-  bleed@https://codeload.github.com/domneo/bleed/tar.gz/7355451304b4bebc1c2be09b29315bcf3cf31b3b:
-    resolution: {tarball: https://codeload.github.com/domneo/bleed/tar.gz/7355451304b4bebc1c2be09b29315bcf3cf31b3b}
+  bleed@https://codeload.github.com/domneo/bleed/tar.gz/9d268eb13daef5898ca8e6c8b980c3b4a335c1b7:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/domneo/bleed/tar.gz/9d268eb13daef5898ca8e6c8b980c3b4a335c1b7}
     version: 1.0.0
 
 snapshots:
 
-  bleed@https://codeload.github.com/domneo/bleed/tar.gz/7355451304b4bebc1c2be09b29315bcf3cf31b3b: {}
+  bleed@https://codeload.github.com/domneo/bleed/tar.gz/9d268eb13daef5898ca8e6c8b980c3b4a335c1b7: {}
