@@ -70,10 +70,10 @@ const float VIGNETTE = 0.8;
 /* Sync glitch: the picture losing its lock for a moment. Time is diced into
    slots, each slot fires at most once, and only some of them fire at all —
    so the bursts arrive irregularly instead of on a beat. */
-const float SLOT  = 5.0;    /* seconds per slot: at most one burst each */
+const float SLOT  = 3.5;    /* seconds per slot: at most one burst each */
 const float SPAN  = 0.35;   /* longest a burst can run, both waves and all */
-const float WARP  = 0.1;    /* peak sideways pull, in texture units */
-const float CLIMB = 5.5;    /* screen heights per second the wave rises */
+const float WARP  = 5.0;   /* peak sideways pull, in texture units */
+const float CLIMB = 3.5;    /* screen heights per second the wave rises */
 const float LAG   = 0.09;   /* seconds between waves in the same burst */
 const float TAU   = 6.2831853;
 
