@@ -36,7 +36,6 @@
         flex-direction: column;
         gap: var(--space-5);
         inline-size: 100%;
-        max-inline-size: 68rem;
         min-block-size: 0;
         margin-inline: auto;
       }
@@ -74,6 +73,7 @@
         justify-content: safe center;
         align-items: safe center;
         gap: var(--space-5);
+        padding: var(--space-9) var(--space-5);
         text-align: center;
       }
 
@@ -176,7 +176,6 @@
       /* Too short to split the viewport — let the document scroll instead. */
       @media (max-height: 32rem) {
         body { block-size: auto; min-block-size: 100svh; overflow: visible; }
-        .terminal { min-block-size: 24rem; }
       }
 
       /* --- CRT tube --------------------------------------------------------
