@@ -11,6 +11,9 @@ importers:
       '@vercel/analytics':
         specifier: ^2.0.1
         version: 2.0.1
+      '@vercel/speed-insights':
+        specifier: ^2.0.0
+        version: 2.0.0
       bleed:
         specifier: github:domneo/bleed
         version: https://codeload.github.com/domneo/bleed/tar.gz/9d268eb13daef5898ca8e6c8b980c3b4a335c1b7
@@ -46,12 +49,40 @@ packages:
       vue-router:
         optional: true
 
+  '@vercel/speed-insights@2.0.0':
+    resolution: {integrity: sha512-jwkNcrTeafWxjmWq4AHBaptSqZiJkYU5adLC9QBSqeim0GcqDMgN5Ievh8OG1rJ6W3A4l1oiP7qr9CWxGuzu3w==}
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      nuxt: '>= 3'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      nuxt:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+
   bleed@https://codeload.github.com/domneo/bleed/tar.gz/9d268eb13daef5898ca8e6c8b980c3b4a335c1b7:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/domneo/bleed/tar.gz/9d268eb13daef5898ca8e6c8b980c3b4a335c1b7}
+    resolution: {gitHosted: true, integrity: sha512-/AT2xoDCPCHH9lF6uph7S8qBksfowKw+rSYHuBIu7ZQOdr0gc8bVqGNFuYBllBdRLGvdeSzpVXvwbuuq4AjLxg==, tarball: https://codeload.github.com/domneo/bleed/tar.gz/9d268eb13daef5898ca8e6c8b980c3b4a335c1b7}
     version: 1.0.0
 
 snapshots:
 
   '@vercel/analytics@2.0.1': {}
+
+  '@vercel/speed-insights@2.0.0': {}
 
   bleed@https://codeload.github.com/domneo/bleed/tar.gz/9d268eb13daef5898ca8e6c8b980c3b4a335c1b7: {}
