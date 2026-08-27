@@ -7,9 +7,10 @@
   "type": "module",
   "scripts": {
     "sync:ds": "node scripts/sync-ds.js",
-		"build": "pnpm sync:ds"
+    "build": "pnpm sync:ds"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "bleed": "github:domneo/bleed"
   }
 }
